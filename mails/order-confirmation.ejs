@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order confirmation</title>
+</head>
+<body>
+    <div>
+        <div>
+            <h1>Your Elearning order is confirmed!</h1>
+            <p>And we are just exicited as you ere.</p>
+
+        </div>
+        <br>
+        <br>
+        <div>
+            <h4>Here what you orderd</h4>
+            <table style="border-bottom: 1px solid #0000002f;">
+                <tr>
+                    <td>
+                        Order  <%= order._id %>
+                    </td>
+                    <td>
+                        Order Date <%= order.date %>
+                    </td>
+                </tr>
+            </table>
+            <table style="width: 90%; margin: auto; display: block;">
+                <tr>
+                    <td class="first-td">Item</td>
+                    <td class="first-td">Qty</td>
+                    <td class="first-td">Cost</td>
+                </tr>
+            </table>
+            <table style="width: 90%; margin: auto; display: block;">
+                <tr>
+                    <td><%= order.name %></td>
+                    <td> 1 </td>
+                    <td>₹<%= order.price %></td>
+                    
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
