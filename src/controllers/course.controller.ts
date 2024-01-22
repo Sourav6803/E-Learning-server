@@ -181,7 +181,7 @@ export const addQuestion = catchasyncError(
       //create a new question object
 
       const newQuestion: any = {
-        user: req.user,
+        user: req?.user,
         question,
         questionReplies: [],
       };
@@ -190,7 +190,7 @@ export const addQuestion = catchasyncError(
       courseContent.question.push(newQuestion);
 
       await notificationModel.create({
-        userId: req.user?._id,
+        userId: req?.user?._id,
         title: "New Question recived",
         message: `You have a new question in ${courseContent?.title}`,
       });
