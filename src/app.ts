@@ -22,7 +22,7 @@ app.use(cookieParser())
 app.use(multer().any())
 
 app.use(cors({
-    origin: ["http://localhost:3000"],
+    origin: ["https://e-learning-frontend-8sr0iytv6-sourav6803.vercel.app"],
     credentials: true
 }));
 
