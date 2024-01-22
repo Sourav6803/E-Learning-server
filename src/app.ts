@@ -22,7 +22,7 @@ app.use(cookieParser())
 app.use(multer().any())
 
 app.use(cors({
-    origin: ["https://e-learning-frontend-one.vercel.app/"],
+    origin: ["https://e-learning-frontend-one.vercel.app"],
     credentials: true
 }));
 
