@@ -4,6 +4,17 @@ import { catchasyncError } from "./catchAsyncError";
 import ErrorHandler from "../utils/ErrorHandler";
 import jwt, {  JwtPayload  } from "jsonwebtoken"
 import { redis } from "../utils/redis";
+import { IUser } from "../models/user.model";
+
+// interface IGetUserAuthInfoRequest extends Request {
+//     user: IUser // or any other type
+//   }
+
+  declare module 'express-serve-static-core' {
+    interface Request {
+        user: IUser
+    }
+}
 
 export const isAuthinticated = catchasyncError(async(req:Request,res:Response,next:NextFunction)=>{
     try{
