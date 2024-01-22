@@ -13,7 +13,12 @@ import mongoose from "mongoose";
 import notificationModel from "../models/notificationModel";
 import cron from "node-cron";
 import axios from "axios";
-import userModel from "../models/user.model";
+import userModel, { IUser } from "../models/user.model";
+
+interface IGetUserAuthInfoRequest extends Request {
+  user: IUser // or any other type
+}
+
 
 
 export const uploadCourse = catchasyncError(
@@ -44,12 +49,12 @@ export const editCourse = catchasyncError(
       const courseId = req.params.id;
       const thumbnail = data?.thumbnail;
       const thumbnilUrl = thumbnail?.url
-      console.log(thumbnilUrl)
+      
 
       const courseData = await CourseModel.findById(courseId) as any
 
       if(thumbnilUrl === undefined && !thumbnail.startsWith("https")){
-        console.log("hii")
+        
         await cloudinary.v2.uploader.destroy(courseData.thumbnail.public_id);
 
         const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
@@ -129,7 +134,7 @@ export const getAllCourse = catchasyncError(
 
 // get course content only for valid user
 export const getCourseByUser = catchasyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
       const userCourseList = req.user?.courses;
       const courseId = req.params.id;
@@ -162,7 +167,7 @@ interface IAddQuestionData {
 }
 
 export const addQuestion = catchasyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
       const { question, courseId, contentId }: IAddQuestionData = req.body;
       const course = await CourseModel.findById(courseId);
@@ -212,7 +217,7 @@ interface IAddAnswerData {
 }
 
 export const addAnswer = catchasyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
       const { answer, courseId, contentId, questionId }: IAddAnswerData =
         req.body;
@@ -292,7 +297,7 @@ interface IAddReviewData {
 }
 
 export const addReview = catchasyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
       const userCourseList = req.user?.courses;
       const courseId = req.params.id;
@@ -356,7 +361,7 @@ interface IAddReviewData {
 }
 
 export const addReplyToReview = catchasyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
       const { comment, courseId, reviewId } = req.body as IAddReviewData;
       const course = await CourseModel.findById(courseId);

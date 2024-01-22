@@ -36,6 +36,10 @@ interface IRegistrationBody {
   avatar?: string;
 }
 
+interface IGetUserAuthInfoRequest extends Request {
+  user: IUser // or any other type
+}
+
 
 
 export const registrationUser = catchasyncError(
@@ -193,7 +197,7 @@ export const loginUser = catchasyncError(
 );
 
 export const logOut = catchasyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
       
       res.cookie("access_token", "", { maxAge: 1 });
@@ -210,7 +214,7 @@ export const logOut = catchasyncError(
 );
 
 export const updateAccessToken = catchasyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
       const refresh_token = req.cookies.refresh_token as string;
       const decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN as string) as JwtPayload;
@@ -256,7 +260,7 @@ export const updateAccessToken = catchasyncError(
 );
 
 export const getUserInfo = catchasyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
       
       const userId = req.user?._id;
@@ -299,7 +303,7 @@ interface IUpdateUserInfo {
 }
 
 export const updateUserInfo = catchasyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
       const { name } = req.body as IUpdateUserInfo;
       const userId = req.user?._id;
@@ -326,7 +330,7 @@ interface IUpdatePassword {
     newPassword: string
 }
 
-export const updatePassword = catchasyncError(async(req:Request,res:Response,next: NextFunction)=>{
+export const updatePassword = catchasyncError(async(req:IGetUserAuthInfoRequest,res:Response,next: NextFunction)=>{
     const {oldPassword, newPassword} = req.body as IUpdatePassword
 
     if(!oldPassword || !newPassword){
@@ -356,7 +360,7 @@ interface IUpdateProfilePicture{
     }  
 }
 
-export const updateProfilePicture = catchasyncError(async(req:Request, res:Response, next: NextFunction):Promise<any>=>{
+export const updateProfilePicture = catchasyncError(async(req:IGetUserAuthInfoRequest, res:Response, next: NextFunction):Promise<any>=>{
     try{
         const {avatar} = req.body ;
         const userId = req.user?._id

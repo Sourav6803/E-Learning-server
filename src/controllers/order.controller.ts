@@ -14,8 +14,12 @@ import { redis } from "../utils/redis";
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+ interface IGetUserAuthInfoRequest extends Request {
+  user: IUser // or any other type
+}
+
 export const createOrder = catchasyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
       const { courseId, payment_info } = req.body as IOrder;
 
