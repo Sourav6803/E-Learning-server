@@ -22,9 +22,12 @@ app.use(cookieParser())
 app.use(multer().any())
 
 app.use(cors({
-    origin: ["https://e-learning-frontend-8sr0iytv6-sourav6803.vercel.app"],
+    origin: ["https://e-learning-frontend-one.vercel.app/"],
     credentials: true
 }));
+
+// origin: ["https://e-learning-frontend-8sr0iytv6-sourav6803.vercel.app"],
+//https://e-learning-frontend-11mga87bd-sourav6803.vercel.app/
 
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000, // 15 minutes
