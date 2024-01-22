@@ -24,9 +24,11 @@ exports.app.use((0, helmet_1.default)());
 exports.app.use((0, cookie_parser_1.default)());
 exports.app.use((0, multer_1.default)().any());
 exports.app.use((0, cors_1.default)({
-    origin: ["https://e-learning-frontend-8sr0iytv6-sourav6803.vercel.app"],
+    origin: ["https://e-learning-frontend-one.vercel.app"],
     credentials: true
 }));
+// origin: ["https://e-learning-frontend-8sr0iytv6-sourav6803.vercel.app"],
+//https://e-learning-frontend-11mga87bd-sourav6803.vercel.app/
 const limiter = (0, express_rate_limit_1.rateLimit)({
     windowMs: 15 * 60 * 1000, // 15 minutes
     limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
