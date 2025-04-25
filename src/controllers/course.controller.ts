@@ -19,8 +19,6 @@ interface IGetUserAuthInfoRequest extends Request {
   user: IUser // or any other type
 }
 
-
-
 export const uploadCourse = catchasyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {

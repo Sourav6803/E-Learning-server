@@ -21,10 +21,16 @@ app.use(helmet())
 app.use(cookieParser())
 app.use(multer().any())
 
+// app.use(cors({
+//     origin: ["https://e-learning-frontend-one.vercel.app"],
+//     credentials: true
+// }));
 app.use(cors({
-    origin: ["https://e-learning-frontend-one.vercel.app"],
+    origin: ["http://localhost:3000", "https://e-learning-frontend-one.vercel.app"],
     credentials: true
 }));
+
+
 
 // origin: ["https://e-learning-frontend-8sr0iytv6-sourav6803.vercel.app"],
 //https://e-learning-frontend-11mga87bd-sourav6803.vercel.app/
@@ -53,5 +59,5 @@ app.all('*', (req:Request, res:Response, next:NextFunction)=>{
     err.statusCode = 404
     next(err)
 })
-app.use(limiter)
+// app.use(limiter)
 app.use(ErrorMiddlware);

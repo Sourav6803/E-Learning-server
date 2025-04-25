@@ -15,19 +15,21 @@ import {
   sendToken,
 } from "../utils/jwt";
 import { redis } from "../utils/redis";
-import { getAllUsersService, getuserById, updateUsersRoleService } from "../services/user.service";
+import {
+  getAllUsersService,
+  getuserById,
+  updateUsersRoleService,
+} from "../services/user.service";
 import uploadFile, { removeFile } from "../utils/aws";
 
-
-
 interface multerFile {
-  buffer: Buffer, 
-  encoding: string, 
-  fieldname: string, 
-  mimetype: string, 
-  originalname: string, 
+  buffer: Buffer;
+  encoding: string;
+  fieldname: string;
+  mimetype: string;
+  originalname: string;
   size: number;
-};
+}
 
 interface IRegistrationBody {
   name: string;
@@ -37,33 +39,29 @@ interface IRegistrationBody {
 }
 
 interface IGetUserAuthInfoRequest extends Request {
-  user: IUser // or any other type
+  user: IUser; // or any other type
 }
 
-
-
 export const registrationUser = catchasyncError(
-  async (req: Request, res: Response, next: NextFunction):Promise<any> => {
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
       const { name, email, password, avatar } = req.body;
-      
+
       const isEmailExist = await userModel.findOne({ email });
       if (isEmailExist) {
         return next(new ErrorHandler("Email already exist", 400));
       }
-      
+
       // const files = req.files as any;
-      
+
       // let myFile
       // if(files){
-      //    myFile = files[0] 
-      // } 
+      //    myFile = files[0]
+      // }
       // const uploadImage = await uploadFile(myFile)
       // console.log(uploadImage)
-  
-      //  req.body.avatar = uploadImage as string
 
-       
+      //  req.body.avatar = uploadImage as string
 
       const user: IRegistrationBody = {
         name: name,
@@ -71,8 +69,6 @@ export const registrationUser = catchasyncError(
         password: password,
         // avatar: uploadImage as string,
       };
-
-      
 
       const activationToken = createActivationToken(user);
       const activationCode = activationToken.activationCode;
@@ -148,15 +144,15 @@ export const activateUser = catchasyncError(
         return next(new ErrorHandler("Invalid activation code", 400));
       }
 
-      const { name, email, password , avatar} = newUser.user;
+      const { name, email, password, avatar } = newUser.user;
       const existuser = await userModel.findOne({ email });
 
       if (existuser) {
         return next(new ErrorHandler("Email already exist", 400));
       }
 
-      const user = await userModel.create({ name, email, password , avatar});
-     
+      const user = await userModel.create({ name, email, password, avatar });
+
       return res
         .status(201)
         .json({ success: true, message: "Registration success" });
@@ -173,7 +169,9 @@ interface ILoginrequest {
 
 export const loginUser = catchasyncError(
   async (req: Request, res: Response, next: NextFunction) => {
+    
     try {
+      
       const { email, password } = req.body as ILoginrequest;
 
       if (!email || !password) {
@@ -199,7 +197,6 @@ export const loginUser = catchasyncError(
 export const logOut = catchasyncError(
   async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
-      
       res.cookie("access_token", "", { maxAge: 1 });
       res.cookie("refresh_token", "", { maxAge: 1 });
 
@@ -217,8 +214,10 @@ export const updateAccessToken = catchasyncError(
   async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
       const refresh_token = req.cookies.refresh_token as string;
-      const decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN as string) as JwtPayload;
-      
+      const decoded = jwt.verify(
+        refresh_token,
+        process.env.REFRESH_TOKEN as string
+      ) as JwtPayload;
 
       const message = "Could not refresh";
       if (!decoded) {
@@ -227,7 +226,9 @@ export const updateAccessToken = catchasyncError(
 
       const session = await redis.get(decoded.id as string);
       if (!session) {
-        return next(new ErrorHandler("Please login to access this resourses", 400));
+        return next(
+          new ErrorHandler("Please login to access this resourses", 400)
+        );
       }
 
       const user = JSON.parse(session);
@@ -244,15 +245,15 @@ export const updateAccessToken = catchasyncError(
         { expiresIn: "3d" }
       );
 
-      req.user = user
+      req.user = user;
 
       res.cookie("access_token", accessToken, accessTokenOptions);
       res.cookie("refresh_token", refreshToken, refreshTokenOptions);
 
-      await redis.set(user._id, JSON.stringify(user), "EX", 604800) //7d
+      await redis.set(user._id, JSON.stringify(user), "EX", 604800); //7d
 
       // res.status(200).json({ success: true, accessToken });
-      next()
+      next();
     } catch (err: any) {
       return next(new ErrorHandler(err.message, 400));
     }
@@ -262,9 +263,8 @@ export const updateAccessToken = catchasyncError(
 export const getUserInfo = catchasyncError(
   async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
     try {
-      
       const userId = req.user?._id;
-    
+
       getuserById(userId, res);
     } catch (err: any) {
       return next(new ErrorHandler(err.message, 400));
@@ -308,7 +308,6 @@ export const updateUserInfo = catchasyncError(
       const { name } = req.body as IUpdateUserInfo;
       const userId = req.user?._id;
       const user = await userModel.findById(userId);
-      
 
       if (name && user) {
         user.name = name;
@@ -326,109 +325,125 @@ export const updateUserInfo = catchasyncError(
 );
 
 interface IUpdatePassword {
-    oldPassword : string;
-    newPassword: string
+  oldPassword: string;
+  newPassword: string;
 }
 
-export const updatePassword = catchasyncError(async(req:IGetUserAuthInfoRequest,res:Response,next: NextFunction)=>{
-    const {oldPassword, newPassword} = req.body as IUpdatePassword
+export const updatePassword = catchasyncError(
+  async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
+    const { oldPassword, newPassword } = req.body as IUpdatePassword;
 
-    if(!oldPassword || !newPassword){
-        return next(new ErrorHandler("Please Enter old & new password", 400))
+    if (!oldPassword || !newPassword) {
+      return next(new ErrorHandler("Please Enter old & new password", 400));
     }
 
-    const user = await userModel.findById(req.user?._id).select("+password")
-    if(user?.password === undefined){
-        return next(new ErrorHandler("Invalid user", 400))
+    const user = await userModel.findById(req.user?._id).select("+password");
+    if (user?.password === undefined) {
+      return next(new ErrorHandler("Invalid user", 400));
     }
 
-    const isPasswordMatched = await user?.comparePassword(oldPassword)
-    if(!isPasswordMatched){
-        return next(new ErrorHandler("Old password dose't match", 400))
+    const isPasswordMatched = await user?.comparePassword(oldPassword);
+    if (!isPasswordMatched) {
+      return next(new ErrorHandler("Old password dose't match", 400));
     }
-    user.password = newPassword
-    await user.save()
-    await redis.set(req.user?._id, JSON.stringify(user))
+    user.password = newPassword;
+    await user.save();
+    await redis.set(req.user?._id, JSON.stringify(user));
 
-    res.status(200).json({success:true, user})
-})
+    res.status(200).json({ success: true, user });
+  }
+);
 
-interface IUpdateProfilePicture{
-      avatar:{
-        public_id: String,
-        url: String
-    }  
+interface IUpdateProfilePicture {
+  avatar: {
+    public_id: String;
+    url: String;
+  };
 }
 
-export const updateProfilePicture = catchasyncError(async(req:IGetUserAuthInfoRequest, res:Response, next: NextFunction):Promise<any>=>{
-    try{
-        const {avatar} = req.body ;
-        const userId = req.user?._id
-        const user = await userModel.findById(userId)
+export const updateProfilePicture = catchasyncError(
+  async (
+    req: IGetUserAuthInfoRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const { avatar } = req.body;
+      const userId = req.user?._id;
+      const user = await userModel.findById(userId);
 
-        if( avatar && user){
-          if(user?.avatar?.public_id  ){
-            await cloudinary.v2.uploader.destroy(user?.avatar?.public_id )
-            const myCloud = await cloudinary.v2.uploader.upload(avatar, {folder: "avatars", width: 150})
+      if (avatar && user) {
+        if (user?.avatar?.public_id) {
+          await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
+          const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+            folder: "avatars",
+            width: 150,
+          });
 
-            user.avatar = {
-              public_id: myCloud.public_id,
-              url: myCloud.secure_url
-            }
-          }else{
-            const myCloud = await cloudinary.v2.uploader.upload(avatar, {folder: "avatars", width: 150})
+          user.avatar = {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url,
+          };
+        } else {
+          const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+            folder: "avatars",
+            width: 150,
+          });
 
-            user.avatar = {
-              public_id: myCloud.public_id,
-              url: myCloud.secure_url
-            }
-          }
-         
-
-          await user?.save()
-          await redis.set(req.user?._id, JSON.stringify(user))
-          res.status(200).json({success: true, user})
-          console.log(user)
+          user.avatar = {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url,
+          };
         }
-    }
-    catch (err: any) {
-        return next(new ErrorHandler(err.message, 400));
+
+        await user?.save();
+        await redis.set(req.user?._id, JSON.stringify(user));
+        res.status(200).json({ success: true, user });
       }
+    } catch (err: any) {
+      return next(new ErrorHandler(err.message, 400));
     }
-)
-
-
-export const getAllUsers = catchasyncError(async(req:Request,res:Response, next:NextFunction)=>{
-  try{
-    getAllUsersService(res)
   }
-  catch(err:any){
-    return next(new ErrorHandler(err.message,500))
-  }
-})
+);
 
- export const updateUserRole = catchasyncError(async(req:Request,res:Response, next:NextFunction)=>{
-  try{
-    const {id, role} = req.body
-    updateUsersRoleService(res,id,role)
-  }
-  catch(err:any){
-    return next(new ErrorHandler(err.message,500))
-  }
-})
-
-export const deleteUser = catchasyncError(async(req:Request, res:Response, next:NextFunction)=>{
-  try{
-    const {id}= req.params
-    const user = await userModel.findById(id)
-    if(!user){
-      return next(new ErrorHandler("User not found", 404))
+export const getAllUsers = catchasyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllUsersService(res);
+    } catch (err: any) {
+      return next(new ErrorHandler(err.message, 500));
     }
-    await user.deleteOne({id})
-    await redis.del(id)
-    res.status(200).json({success:true, message:"User deleted successfully"})
   }
-  catch(err:any){
-    return next(new ErrorHandler(err.message, 500))
+);
+
+export const updateUserRole = catchasyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id, role } = req.body;
+      updateUsersRoleService(res, id, role);
+    } catch (err: any) {
+      return next(new ErrorHandler(err.message, 500));
+    }
   }
-})
+);
+
+export const deleteUser = catchasyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const user = await userModel.findById(id);
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+      await user.deleteOne({ id });
+      await redis.del(id);
+      res
+        .status(200)
+        .json({ success: true, message: "User deleted successfully" });
+    } catch (err: any) {
+      return next(new ErrorHandler(err.message, 500));
+    }
+  }
+);
+
+

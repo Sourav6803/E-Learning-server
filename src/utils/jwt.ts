@@ -6,8 +6,6 @@ import ErrorHandler from "./ErrorHandler";
 import jwt, { Secret } from "jsonwebtoken";
 import { redis } from "./redis";
 
-
-
 interface ITokenOptions{
     expires: Date;
     maxAge: number;
@@ -52,9 +50,5 @@ export const sendToken = (user:IUser, statusCode:number, res:Response) =>{
 
     res.cookie("refresh_token", refreshToken, refreshTokenOptions);
     res.cookie("access_token", accessToken, accessTokenOptions);
-    
-    
-     
-
     res.status(statusCode).json({success: true, user, accessToken})
 }

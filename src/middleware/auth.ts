@@ -6,9 +6,6 @@ import jwt, {  JwtPayload  } from "jsonwebtoken"
 import { redis } from "../utils/redis";
 import { IUser } from "../models/user.model";
 
-// interface IGetUserAuthInfoRequest extends Request {
-//     user: IUser // or any other type
-//   }
 
   declare module 'express-serve-static-core' {
     interface Request {
@@ -28,10 +25,12 @@ export const isAuthinticated = catchasyncError(async(req:Request,res:Response,ne
         const decoded = jwt.verify(access_token, process.env.ACCESS_TOKEN as string) as JwtPayload
         if(!decoded){
             return next(new ErrorHandler("Access token is not valid", 400))
-        }
 
-        const user = await redis.get(decoded.id)
+          
+        }
         
+        const user = await redis.get(decoded.id)
+       
         if(!user){
             return next(new ErrorHandler("Please login ", 400))
         }

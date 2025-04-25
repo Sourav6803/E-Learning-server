@@ -9,11 +9,12 @@ export const initSocketServer = (server: http.Server) =>{
 
         // Listen for notification event from the frontend
         socket.on("notification", (data:any)=>{
+
             io.emit("newNotification", data)
+            console.log("new notification", data)
         })
         socket.on("disconnect", ()=>{
             console.log("A user disconnected.")
         })
     })
-
 }

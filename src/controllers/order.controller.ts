@@ -146,6 +146,7 @@ export const newPayment = catchasyncError(async(req:Request, res:Response, next:
         enabled:true
       }
     });
+    console.log(myPaymet)
 
     res.status(201).json({
       success: true,
