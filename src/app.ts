@@ -26,7 +26,7 @@ app.use(multer().any())
 //     credentials: true
 // }));
 app.use(cors({
-    origin: ["http://localhost:3000", "https://e-learning-frontend-one.vercel.app", "https://e-learning-frontend-kt6l.vercel.app/"],
+    origin: ["http://localhost:3000", "https://e-learning-frontend-one.vercel.app", "https://e-learning-frontend-kt6l.vercel.app"],
     credentials: true
 }));
 
